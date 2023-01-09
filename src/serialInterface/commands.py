@@ -5,30 +5,39 @@ from pySerialTransfer import pySerialTransfer
 
 from models import Led
 
-Command = List
+Command = List # TODO: restrict shape with pydantic
+
+# An index < 0 denotes an action event.
+#  action_key |  action
+#      -1     |  clear strip
+#      -2     |  set brightness, read from [1]
+#      -3     |  set show on write, where false <= 0 < true
 
 def clear_strip() -> Command:
+  """Returns a Command to clear the strip."""
   return [-1, 0, 0, 0]
 
 def set_brightness(brightness: int) -> Command:
+  """Returns a Command to set the brightness of the strip."""
+  #TODO: Strip refactor
   return [-2, brightness, 0, 0]
 
 def set_led(led: Led) -> Command:
-  return [Led.index, Led.red, Led.green, Led.blue]
+  """Returns a Command to set an Led."""
+  return [led.index, led.color.red, led.color.green, led.color.blue]
 
 def set_show_on_write(show_on_write: bool) -> Command:
+  """Returns a Command to set showOnWrite."""
   show_on_write_int = 0
   if show_on_write:
     show_on_write_int = 1
   return [-3, show_on_write_int, 0, 0]
 
-
 def process(link: pySerialTransfer, cmd: Command) -> bool:
   """Process a cmd over the provided link. """
   try:
-    sendSize = 0
-    sendSize = link.tx_obj(cmd, start_pos=sendSize, byte_format='<')
-    logger.debug("Sending: ", cmd, sendSize)
+    sendSize = link.tx_obj(cmd, start_pos=0, byte_format='<')
+    logger.debug("sending command {} of {} bytes.", cmd, sendSize)
     if sendSize is None:
       raise Exception("Serial transaction failed: {}".format(sendSize))
 
@@ -50,10 +59,18 @@ def process(link: pySerialTransfer, cmd: Command) -> bool:
     ###################################################################
     # Parse response
     ###################################################################
-    availableBytes = link.available()
     rec = link.rx_obj(obj_type=(list), byte_format='<', list_format='i', obj_byte_size=sendSize)
     if rec is None:
       raise Exception("Serial receive failed")
-    logger.debug("Bytes read: ", availableBytes, "Received: ", rec, type(rec), repr(rec))
+    logger.debug("received {} of length {} bytes.", rec, sendSize)
   except Exception as e:
     logger.error("Failed to process {} on link {}: {}", cmd, link, e)
+
+def init_link(serial_device: str) -> pySerialTransfer:
+  try:
+    link = pySerialTransfer.SerialTransfer(serial_device, debug=True)
+  except pySerialTransfer.InvalidSerialPort as e:
+    raise e
+  finally:
+    link.open()
+  return link

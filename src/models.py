@@ -1,16 +1,15 @@
-from dataclasses import dataclass
-from typing import Dict, NamedTuple
+from typing import Dict
+from pydantic import BaseModel
 
-class RGB(NamedTuple):
+class RGB(BaseModel):
   red: int
   green: int
   blue: int
 
-class Led(NamedTuple):
+class Led(BaseModel):
   index: int
   color: RGB
 
-@dataclass
-class Strip:
-  id: 1
+class Strip(BaseModel):
+  id: int = 1
   leds: Dict[int, Led]

@@ -6,12 +6,6 @@ SerialTransfer serialTx;
 // [ index, red, green, blue]
 int32_t ledPrimitives[4];
 
-// An index < 0 denotes an action event.
-//  action_key |  action
-//      -1     |  clear strip
-//      -2     |  set brightness, read from [1]
-//      -3     |  set show on write, where false <= 0 < true
-
 CRGB leds[60];
 
 void setup() { 
