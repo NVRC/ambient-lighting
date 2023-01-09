@@ -9,6 +9,8 @@ fastapi = "*"
 uvicorn = {extras = ["standard"], version = "*"}
 doit = "*"
 loguru = "*"
+black = "*"
+pylint-pydantic = "*"
 
 [dev-packages]
 

@@ -1,15 +1,29 @@
+"""This module defines pydantic class models.
+"""
+
 from typing import Dict
 from pydantic import BaseModel
 
+
 class RGB(BaseModel):
-  red: int
-  green: int
-  blue: int
+    """RGB color model."""
+
+    red: int
+    green: int
+    blue: int
+
 
 class Led(BaseModel):
-  index: int
-  color: RGB
+    """Led modeling an index within a Strip and a color."""
+
+    color: RGB
+
+
+LedMap = Dict[int, Led]
+
 
 class Strip(BaseModel):
-  id: int = 1
-  leds: Dict[int, Led]
+    """An ambient light strip containing a map of Leds."""
+
+    id: int = 1
+    leds: LedMap
