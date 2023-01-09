@@ -1,4 +1,4 @@
-# Ambient lighting
+# Ambient lighting Backend
 A REST API controlling ambient lighting via an arduino over serial.
 
 # System dependencies
