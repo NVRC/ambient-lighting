@@ -24,7 +24,11 @@ def init_build_dirs():
 
 def task_init_build_dir():
     """Create build directories."""
-    return {"actions": [init_build_dirs]}
+    return {
+            "actions": [init_build_dirs],
+            "clean": True,
+            "targets": ["build"],
+        }
 
 
 def task_lint():
@@ -39,6 +43,7 @@ def task_lint():
             ),
         ],
         "task_dep": ["init_build_dir"],
+        "clean": True
     }
 
 
@@ -46,10 +51,12 @@ def task_clean_pycache():
     """Clean pycache."""
 
     def rm_pycache():
-        for path in Path.cwd().glob("__pycache___"):
+        for path in Path.cwd().glob("__pycache__"):
             rmtree(path)
 
-    return {"actions": [rm_pycache]}
+    return {
+        "actions": [rm_pycache],
+    }
 
 
 def task_check_env():

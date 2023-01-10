@@ -25,8 +25,8 @@ if __name__ == "__main__":
     app.state = AppState(config)
 
     @app.get("/strips/{strip_id}", response_model=Strip)
-    def read_strip(request: Request, strip_id: int) -> Strip:
-        return request.app.state.strip
+    def read_strip(request: Request, strip_id: int) -> Union[Strip, None]:
+        return request.app.state.strips.get(strip_id, None)
 
     @app.post("/strips/{strip_id}/leds", response_model=LedMap)
     def post_strip_leds(request: Request, strip_id: int, led_map: LedMap) -> List[Led]:

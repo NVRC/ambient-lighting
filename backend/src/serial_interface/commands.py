@@ -40,39 +40,35 @@ def set_show_on_write(show_on_write: bool) -> Command:
 
 def process(link: pySerialTransfer, cmd: Command) -> bool:
     """Process a cmd over the provided link."""
-    try:
-        send_size = link.tx_obj(cmd, start_pos=0, byte_format="<")
-        logger.debug("sending command {} of {} bytes.", cmd, send_size)
-        if send_size is None:
-            raise Exception("Serial transaction failed: {}".format(send_size))
+    send_size = link.tx_obj(cmd, start_pos=0, byte_format="<")
+    logger.debug("sending command {} of {} bytes.", cmd, send_size)
+    if send_size is None:
+        raise Exception("Serial transaction failed: {}".format(send_size))
 
-        link.send(send_size)
-        ###################################################################
-        # Wait for a response and report any errors while receiving packets
-        ###################################################################
-        while not link.available():
-            if link.status < 0:
-                if link.status == pySerialTransfer.CRC_ERROR:
-                    logger.error("ERROR: CRC_ERROR")
-                elif link.status == pySerialTransfer.PAYLOAD_ERROR:
-                    logger.error("ERROR: PAYLOAD_ERROR")
-                elif link.status == pySerialTransfer.STOP_BYTE_ERROR:
-                    logger.error("ERROR: STOP_BYTE_ERROR")
-                else:
-                    logger.error("ERROR: link status {}".format(link.status))
+    link.send(send_size)
+    ###################################################################
+    # Wait for a response and report any errors while receiving packets
+    ###################################################################
+    while not link.available():
+        if link.status < 0:
+            if link.status == pySerialTransfer.CRC_ERROR:
+                logger.error("ERROR: CRC_ERROR")
+            elif link.status == pySerialTransfer.PAYLOAD_ERROR:
+                logger.error("ERROR: PAYLOAD_ERROR")
+            elif link.status == pySerialTransfer.STOP_BYTE_ERROR:
+                logger.error("ERROR: STOP_BYTE_ERROR")
+            else:
+                logger.error("ERROR: link status {}".format(link.status))
 
-        ###################################################################
-        # Parse response
-        ###################################################################
-        rec = link.rx_obj(
-            obj_type=(list), byte_format="<", list_format="i", obj_byte_size=send_size
-        )
-        if rec is None:
-            return False
-        logger.debug("received {} of length {} bytes.", rec, send_size)
-    except Exception as ex:
-        logger.error("Failed to process {} on link {}: {}", cmd, link, ex)
+    ###################################################################
+    # Parse response
+    ###################################################################
+    rec = link.rx_obj(
+        obj_type=(list), byte_format="<", list_format="i", obj_byte_size=send_size
+    )
+    if rec is None:
         return False
+    logger.debug("received {} of length {} bytes.", rec, send_size)
     return True
 
 
