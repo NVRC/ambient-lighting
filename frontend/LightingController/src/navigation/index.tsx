@@ -11,7 +11,7 @@ import * as React from 'react';
 import { ColorSchemeName, Pressable } from 'react-native';
 
 import Colors from '../constants/Colors';
-import ModalScreen from '../screens/ModalScreen';
+import ModalScreen from '../screens/SettingsScreen';
 import NotFoundScreen from '../screens/NotFoundScreen';
 import QuickSetTabScreen from '../screens/QuickSetTabScreen';
 import AnimateTabScreen from '../screens/AnimateTabScreen';
@@ -69,7 +69,7 @@ function BottomTabNavigator() {
         component={QuickSetTabScreen}
         options={({ navigation }: RootTabScreenProps<'QuickSetTab'>) => ({
           title: 'Quick Set',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="dot-circle-o" color={color} />,
           headerRight: () => (
             <Pressable
               onPress={() => navigation.navigate('Modal')}
@@ -77,7 +77,7 @@ function BottomTabNavigator() {
                 opacity: pressed ? 0.5 : 1,
               })}>
               <FontAwesome
-                name="info-circle"
+                name="gears"
                 size={25}
                 color={Colors[colorScheme].text}
                 style={{ marginRight: 15 }}
@@ -90,8 +90,8 @@ function BottomTabNavigator() {
         name="AnimateTab"
         component={AnimateTabScreen}
         options={{
-          title: 'Tab Two',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          title: 'Animations',
+          tabBarIcon: ({ color }) => <TabBarIcon name="hourglass" color={color} />,
         }}
       />
     </BottomTab.Navigator>

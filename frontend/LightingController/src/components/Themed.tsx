@@ -38,6 +38,13 @@ export function Text(props: TextProps) {
   return <DefaultText style={[{ color }, style]} {...otherProps} />;
 }
 
+// export function TextInput(props: TextProps, onChange) {
+//     const { style, lightColor, darkColor, colorScheme, ...otherProps } = props;
+//     const color = useThemeColor(colorScheme, { light: lightColor, dark: darkColor }, 'text');
+
+//     return <TextInput></TextInput>
+// }
+
 export function View(props: ViewProps) {
   const { style, lightColor, darkColor, colorScheme, ...otherProps } = props;
   const backgroundColor = useThemeColor(colorScheme, { light: lightColor, dark: darkColor }, 'background');

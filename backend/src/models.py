@@ -25,6 +25,6 @@ LedMap = Dict[int, Led]
 class Strip(BaseModel):
     """An ambient light strip containing a map of Leds."""
 
-    id: int = 1
-    brightness: int = 255
+    id: int
+    brightness: int
     leds: LedMap

@@ -12,7 +12,7 @@ def task_install():
 def task_launch():
     """Runs the API server locally."""
     return {
-        "actions": ["python src/main.py --serial-device /dev/ttyUSB0"],
+        "actions": ["python src/main.py"],
         "task_dep": ["clean_pycache", "lint"],
     }
 

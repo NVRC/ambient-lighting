@@ -5,6 +5,8 @@ import { ledStripsApi } from 'controller/redux/services/ledStripsApi';
 
 import { SettingsState } from './slices/settingsSlice';
 
+export const STRIP_ID = 1;
+
 const store = configureStore({
   reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>

@@ -1,14 +1,13 @@
 import { ActivityIndicator, StyleSheet } from 'react-native';
 
-import { View, Text } from 'controller/components/Themed';
+import { View } from 'controller/components/Themed';
 import { RootTabScreenProps } from '../../types';
 import { useAppSelector } from 'controller/redux/hooks';
 import { getSettings } from 'controller/redux/slices/settingsSlice';
-import { SketchPicker, ColorChangeHandler } from 'react-color';
+import { RgbColor, RgbColorPicker } from 'react-colorful';
 import { Led, usePostStripLedsStripsStripIdLedsPostMutation, useReadStripStripsStripIdGetQuery } from 'controller/redux/services/ledStripsApi';
 
-const STRIP_ID = 1;
-
+import { STRIP_ID } from 'controller/redux/store'
 interface LedMap {
     [key: string]: Led
 }
@@ -17,7 +16,7 @@ export default function QuickSetTabScreen({ navigation }: RootTabScreenProps<'Qu
   const { colorScheme } = useAppSelector(getSettings)
 
   const { data: strip, isLoading, isFetching, isError } = useReadStripStripsStripIdGetQuery({
-    stripId: 1
+    stripId: STRIP_ID,
   });
   const [postStripLeds] = usePostStripLedsStripsStripIdLedsPostMutation();
 
@@ -30,11 +29,11 @@ export default function QuickSetTabScreen({ navigation }: RootTabScreenProps<'Qu
     )
   }
 
-  const onChangeComplete: ColorChangeHandler = (color) => {
+  const onChangeComplete = (color: RgbColor) => {
     const rgb = {
-        red: color.rgb.r,
-        green: color.rgb.g,
-        blue: color.rgb.b,
+        red: color.r,
+        green: color.g,
+        blue: color.b,
     }
     const ledMap: LedMap = {};
     Object.entries(strip?.leds).forEach((tuple) => {
@@ -52,7 +51,7 @@ export default function QuickSetTabScreen({ navigation }: RootTabScreenProps<'Qu
   }
   return (
     <View colorScheme={colorScheme} style={styles.container}>
-        <SketchPicker onChangeComplete={onChangeComplete}/>
+        <RgbColorPicker onChange={onChangeComplete}/>
     </View>
   );
 }

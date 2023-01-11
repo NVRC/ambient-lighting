@@ -1,9 +1,5 @@
-import argparse
-
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-
-from loguru import logger
 
 from models import Led, Strip, LedMap
 from serial_interface import commands
@@ -19,20 +15,15 @@ origins = [
     "http://127.0.0.1:19006",
 ]
 
-NUM_LEDS = 60
 
 if __name__ == "__main__":
     import uvicorn
 
-    arg_parser = argparse.ArgumentParser()
-    arg_parser.add_argument("--serial-device", dest="serial_device", required=True)
-    args = arg_parser.parse_args()
-
     app = FastAPI()
 
-    config = ConfigFactory(args.serial_device, DEV_LABEL)
+    configFactory = ConfigFactory()
     # Initialize state from configuration
-    app.state = AppState(config)
+    app.state = AppState(configFactory(DEV_LABEL))
 
     app.add_middleware(
         CORSMiddleware,
@@ -47,27 +38,24 @@ if __name__ == "__main__":
         strip = request.app.state.strips.get(strip_id, None)
         if strip is None:
             raise HTTPException(status_code=404, detail="Lighting strip not found")
-        logger.info("Returning strip: {}", strip)
         return strip
 
     @app.post("/strips/{strip_id}", status_code=201)
-    def post_strip(request: Request, strip_id: int) -> Strip:
-        strip = request.app.state.strips.get(strip_id, None)
-        if strip is None:
+    def post_strip(request: Request, strip_id: int, strip: Strip) -> Strip:
+        curr_strip = request.app.state.strips.get(strip_id, None)
+        if curr_strip is None:
             raise HTTPException(status_code=404, detail="Lighting strip not found")
-        link = request.app.state.link
-        commands.process(link, commands.set_brightness(strip.brightness))
+
+        request.app.state.strips[strip_id] = strip
+
+        cmds = [commands.set_brightness(strip.brightness)]
+        cmds.extend(commands.set_strip(strip.leds))
+        request.app.state.command(cmds)
         return strip
 
     @app.post("/strips/{strip_id}/leds", status_code=201)
     def post_strip_leds(request: Request, strip_id: int, led_map: LedMap):
-        cmds = [commands.set_show_on_write(False)]
-        for index in led_map:  # pylint: disable=consider-using-dict-items
-            led = led_map[index]
-            if index == NUM_LEDS - 1:
-                cmds.append(commands.set_show_on_write(True))
-            cmds.append(commands.set_led(index, led))
-
+        cmds = commands.set_strip(led_map)
         request.app.state.command(cmds)
 
         request.app.state.strips.get(strip_id).leds = led_map
@@ -85,10 +73,9 @@ if __name__ == "__main__":
     @app.post("/strips/{strip_id}/leds/{index_id}", status_code=201)
     def post_led(request: Request, strip_id: int, index_id: int, led: Led):
         strip = request.app.state.strips.get(strip_id)
-        link = request.app.state.link
+        request.app.state.command([commands.set_led(index_id, led)])
 
         strip.leds[index_id] = led
-        commands.process(link, commands.set_led(index_id, led))
 
     uvicorn.run(
         "__main__:app",

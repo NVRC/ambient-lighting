@@ -40,7 +40,9 @@ void loop() {
             break;
         }
       }
-      leds[index].setRGB(serialMessageBuffer[1], serialMessageBuffer[2], serialMessageBuffer[3]);
+      // DOTSTAR has swapped red and blue so compensate at our lowest lvl interface.
+      leds[index].setRGB(serialMessageBuffer[3], serialMessageBuffer[2], serialMessageBuffer[1]);
+
       if (showOnWrite) {
         FastLED.show();
       }

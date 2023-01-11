@@ -14,6 +14,7 @@ const injectedRtkApi = api.injectEndpoints({
       query: (queryArg) => ({
         url: `/strips/${queryArg.stripId}`,
         method: "POST",
+        body: queryArg.strip,
       }),
     }),
     postStripLedsStripsStripIdLedsPost: build.mutation<
@@ -57,6 +58,7 @@ export type PostStripStripsStripIdPostApiResponse =
   /** status 201 Successful Response */ Strip;
 export type PostStripStripsStripIdPostApiArg = {
   stripId: number;
+  strip: Strip;
 };
 export type PostStripLedsStripsStripIdLedsPostApiResponse =
   /** status 201 Successful Response */ any;
@@ -88,8 +90,8 @@ export type Led = {
   color: Rgb;
 };
 export type Strip = {
-  id?: number;
-  brightness?: number;
+  id: number;
+  brightness: number;
   leds: {
     [key: string]: Led;
   };

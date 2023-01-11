@@ -11,7 +11,7 @@ class AppConfig(BaseModel):
 
 class GlobalConfig(BaseSettings):
     app_config: AppConfig = AppConfig()
-    serial_device_path: str
+    serial_device_path: Optional[str] = None
     debug: bool = False
 
     class Config:
@@ -31,15 +31,9 @@ class ProdConfig(GlobalConfig):
 class ConfigFactory:
     """ConfigFactory returns an environment specific configuration."""
 
-    def __init__(self, serial_device_path: str, env_label: Optional[str]):
-        self.env_label = env_label
-        self.serial_device_path = serial_device_path
-
-    def __call__(self):
-        if self.env_label == DEV_LABEL:
-            return DevConfig(serial_device_path=self.serial_device_path)
-        if self.env_label == PROD_LABEL:
-            return ProdConfig(serial_device_path=self.serial_device_path)
-        raise Exception(
-            "Invalid environment label '{}' provided".format(self.env_label)
-        )
+    def __call__(self, env_label: Optional[str]):
+        if env_label == DEV_LABEL:
+            return DevConfig()
+        if env_label == PROD_LABEL:
+            return ProdConfig()
+        raise Exception("Invalid environment label '{}' provided".format(env_label))
