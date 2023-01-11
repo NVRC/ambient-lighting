@@ -3,6 +3,8 @@ import argparse
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
+from loguru import logger
+
 from models import Led, Strip, LedMap
 from serial_interface import commands
 from config import DEV_LABEL, ConfigFactory
@@ -45,16 +47,29 @@ if __name__ == "__main__":
         strip = request.app.state.strips.get(strip_id, None)
         if strip is None:
             raise HTTPException(status_code=404, detail="Lighting strip not found")
+        logger.info("Returning strip: {}", strip)
+        return strip
+
+    @app.post("/strips/{strip_id}", status_code=201)
+    def post_strip(request: Request, strip_id: int) -> Strip:
+        strip = request.app.state.strips.get(strip_id, None)
+        if strip is None:
+            raise HTTPException(status_code=404, detail="Lighting strip not found")
+        link = request.app.state.link
+        commands.process(link, commands.set_brightness(strip.brightness))
         return strip
 
     @app.post("/strips/{strip_id}/leds", status_code=201)
     def post_strip_leds(request: Request, strip_id: int, led_map: LedMap):
-        link = request.app.state.link
-        commands.process(link, commands.set_show_on_write(False))
-        for index in led_map.keys():
+        cmds = [commands.set_show_on_write(False)]
+        for index in led_map:  # pylint: disable=consider-using-dict-items
             led = led_map[index]
-            commands.process(link, commands.set_led(index, led))
-        commands.process(link, commands.set_show_on_write(True))
+            if index == NUM_LEDS - 1:
+                cmds.append(commands.set_show_on_write(True))
+            cmds.append(commands.set_led(index, led))
+
+        request.app.state.command(cmds)
+
         request.app.state.strips.get(strip_id).leds = led_map
 
     @app.get("/strips/{strip_id}/leds/{index_id}")

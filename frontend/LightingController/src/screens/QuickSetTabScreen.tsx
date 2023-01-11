@@ -5,7 +5,7 @@ import { RootTabScreenProps } from '../../types';
 import { useAppSelector } from 'controller/redux/hooks';
 import { getSettings } from 'controller/redux/slices/settingsSlice';
 import { SketchPicker, ColorChangeHandler } from 'react-color';
-import { Led, Strip, usePostStripLedsStripsStripIdLedsPostMutation, useReadStripStripsStripIdGetQuery } from 'controller/redux/services/ledStripsApi';
+import { Led, usePostStripLedsStripsStripIdLedsPostMutation, useReadStripStripsStripIdGetQuery } from 'controller/redux/services/ledStripsApi';
 
 const STRIP_ID = 1;
 
@@ -19,7 +19,7 @@ export default function QuickSetTabScreen({ navigation }: RootTabScreenProps<'Qu
   const { data: strip, isLoading, isFetching, isError } = useReadStripStripsStripIdGetQuery({
     stripId: 1
   });
-  const [postStripLeds, result ] = usePostStripLedsStripsStripIdLedsPostMutation();
+  const [postStripLeds] = usePostStripLedsStripsStripIdLedsPostMutation();
 
 
   if (isLoading || isFetching || isError || strip === undefined){
@@ -50,7 +50,6 @@ export default function QuickSetTabScreen({ navigation }: RootTabScreenProps<'Qu
         body: ledMap
     })
   }
-
   return (
     <View colorScheme={colorScheme} style={styles.container}>
         <SketchPicker onChangeComplete={onChangeComplete}/>

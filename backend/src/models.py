@@ -26,4 +26,5 @@ class Strip(BaseModel):
     """An ambient light strip containing a map of Leds."""
 
     id: int = 1
+    brightness: int = 255
     leds: LedMap

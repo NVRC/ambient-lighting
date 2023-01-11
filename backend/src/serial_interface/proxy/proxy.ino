@@ -4,7 +4,7 @@
 SerialTransfer serialTx;
 
 // [ index, red, green, blue]
-int32_t ledPrimitives[4];
+int32_t serialMessageBuffer[4];
 
 CRGB leds[60];
 
@@ -19,8 +19,8 @@ bool showOnWrite = true;
 void loop() { 
   if(serialTx.available()){
       uint16_t recSize = 0;
-      recSize = serialTx.rxObj(ledPrimitives, recSize);
-      uint32_t index = ledPrimitives[0];
+      recSize = serialTx.rxObj(serialMessageBuffer, recSize);
+      uint32_t index = serialMessageBuffer[0];
       if (index < 0) {
         // Apply action
         switch (index) {
@@ -28,23 +28,25 @@ void loop() {
             FastLED.clear(true);
             break;
           case -2:
-            FastLED.setBrightness(ledPrimitives[1]);
+            FastLED.setBrightness(serialMessageBuffer[1]);
             break;
           case -3:
-            showOnWrite = false;
+            if (serialMessageBuffer[1] > 0){
+                showOnWrite = true;
+            } else {
+                showOnWrite = false;
+            }
           default:
             break;
         }
       }
-      leds[index].r = ledPrimitives[1];
-      leds[index].g = ledPrimitives[2];
-      leds[index].b = ledPrimitives[3];
+      leds[index].setRGB(serialMessageBuffer[1], serialMessageBuffer[2], serialMessageBuffer[3]);
       if (showOnWrite) {
         FastLED.show();
       }
 
       uint16_t sendSize = 0;
-      sendSize = serialTx.txObj(ledPrimitives, sendSize);
+      sendSize = serialTx.txObj(serialMessageBuffer, sendSize);
       serialTx.sendData(sendSize);
   }
 }

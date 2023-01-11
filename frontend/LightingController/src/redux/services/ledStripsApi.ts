@@ -7,6 +7,15 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: (queryArg) => ({ url: `/strips/${queryArg.stripId}` }),
     }),
+    postStripStripsStripIdPost: build.mutation<
+      PostStripStripsStripIdPostApiResponse,
+      PostStripStripsStripIdPostApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/strips/${queryArg.stripId}`,
+        method: "POST",
+      }),
+    }),
     postStripLedsStripsStripIdLedsPost: build.mutation<
       PostStripLedsStripsStripIdLedsPostApiResponse,
       PostStripLedsStripsStripIdLedsPostApiArg
@@ -44,8 +53,13 @@ export type ReadStripStripsStripIdGetApiResponse =
 export type ReadStripStripsStripIdGetApiArg = {
   stripId: number;
 };
+export type PostStripStripsStripIdPostApiResponse =
+  /** status 201 Successful Response */ Strip;
+export type PostStripStripsStripIdPostApiArg = {
+  stripId: number;
+};
 export type PostStripLedsStripsStripIdLedsPostApiResponse =
-  /** status 200 Successful Response */ any;
+  /** status 201 Successful Response */ any;
 export type PostStripLedsStripsStripIdLedsPostApiArg = {
   stripId: number;
   body: {
@@ -59,7 +73,7 @@ export type ReadLedStripsStripIdLedsIndexIdGetApiArg = {
   indexId: number;
 };
 export type PostLedStripsStripIdLedsIndexIdPostApiResponse =
-  /** status 200 Successful Response */ any;
+  /** status 201 Successful Response */ any;
 export type PostLedStripsStripIdLedsIndexIdPostApiArg = {
   stripId: number;
   indexId: number;
@@ -75,6 +89,7 @@ export type Led = {
 };
 export type Strip = {
   id?: number;
+  brightness?: number;
   leds: {
     [key: string]: Led;
   };
@@ -89,6 +104,7 @@ export type HttpValidationError = {
 };
 export const {
   useReadStripStripsStripIdGetQuery,
+  usePostStripStripsStripIdPostMutation,
   usePostStripLedsStripsStripIdLedsPostMutation,
   useReadLedStripsStripIdLedsIndexIdGetQuery,
   usePostLedStripsStripIdLedsIndexIdPostMutation,

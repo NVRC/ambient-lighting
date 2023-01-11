@@ -1,5 +1,8 @@
 """This module encapsulates application state.
 """
+from typing import List
+
+from threading import Lock
 
 from fastapi.datastructures import State
 from config import GlobalConfig
@@ -9,7 +12,10 @@ from models import Led, RGB, Strip, LedMap
 
 
 class AppState(State):
-    """Subclasses State and inflates from GlobalConfig."""
+    """Subclasses State and inflates from GlobalConfig.
+
+    Controls
+    """
 
     def __init__(self, config: GlobalConfig):
         leds: LedMap = {}
@@ -19,5 +25,11 @@ class AppState(State):
         state = {
             "link": commands.init_link(config.serial_device_path),
             "strips": {1: Strip(leds=leds)},
+            "link_lock": Lock(),
         }
         super().__init__(state)
+
+    def command(self, cmds: List[commands.Command]):
+        with self.link_lock:
+            for command in cmds:
+                commands.process(self.link, command)
