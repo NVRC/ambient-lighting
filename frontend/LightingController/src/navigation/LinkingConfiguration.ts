@@ -20,9 +20,9 @@ const linking: LinkingOptions<RootStackParamList> = {
               QuickSetTabScreen: 'one',
             },
           },
-          SettingsTab: {
+          AnimateTab: {
             screens: {
-              SettingsTabScreen: 'two',
+              AnimateTabScreen: 'two',
             },
           },
         },

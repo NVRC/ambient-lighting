@@ -1,18 +1,59 @@
-import { StyleSheet } from 'react-native';
+import { ActivityIndicator, StyleSheet } from 'react-native';
 
-import EditScreenInfo from 'controller/components/EditScreenInfo';
-import { Text, View } from 'controller/components/Themed';
+import { View, Text } from 'controller/components/Themed';
 import { RootTabScreenProps } from '../../types';
 import { useAppSelector } from 'controller/redux/hooks';
 import { getSettings } from 'controller/redux/slices/settingsSlice';
+import { SketchPicker, ColorChangeHandler } from 'react-color';
+import { Led, Strip, usePostStripLedsStripsStripIdLedsPostMutation, useReadStripStripsStripIdGetQuery } from 'controller/redux/services/ledStripsApi';
+
+const STRIP_ID = 1;
+
+interface LedMap {
+    [key: string]: Led
+}
 
 export default function QuickSetTabScreen({ navigation }: RootTabScreenProps<'QuickSetTab'>) {
-  const { colorScheme} = useAppSelector(getSettings)
+  const { colorScheme } = useAppSelector(getSettings)
+
+  const { data: strip, isLoading, isFetching, isError } = useReadStripStripsStripIdGetQuery({
+    stripId: 1
+  });
+  const [postStripLeds, result ] = usePostStripLedsStripsStripIdLedsPostMutation();
+
+
+  if (isLoading || isFetching || isError || strip === undefined){
+    return (
+        <View colorScheme={colorScheme} style={styles.container}>
+            <ActivityIndicator />
+        </View>
+    )
+  }
+
+  const onChangeComplete: ColorChangeHandler = (color) => {
+    const rgb = {
+        red: color.rgb.r,
+        green: color.rgb.g,
+        blue: color.rgb.b,
+    }
+    const ledMap: LedMap = {};
+    Object.entries(strip?.leds).forEach((tuple) => {
+        const [ index, led ] = tuple;
+        const newLed = {
+            ...led,
+            color: rgb,
+        }
+        ledMap[index] = newLed;
+    })
+    postStripLeds({
+        stripId: STRIP_ID,
+        body: ledMap
+    })
+  }
+
   return (
     <View colorScheme={colorScheme} style={styles.container}>
-      <Text colorScheme={colorScheme} style={styles.title}>Tab One</Text>
-      <View colorScheme={colorScheme} style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="/screens/QuickSetTabScreen.tsx" />
+        <SketchPicker onChangeComplete={onChangeComplete}/>
     </View>
   );
 }

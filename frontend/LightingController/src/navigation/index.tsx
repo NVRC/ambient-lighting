@@ -14,7 +14,7 @@ import Colors from '../constants/Colors';
 import ModalScreen from '../screens/ModalScreen';
 import NotFoundScreen from '../screens/NotFoundScreen';
 import QuickSetTabScreen from '../screens/QuickSetTabScreen';
-import SettingsTabScreen from '../screens/SettingsTabScreen';
+import AnimateTabScreen from '../screens/AnimateTabScreen';
 import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../../types';
 import LinkingConfiguration from './LinkingConfiguration';
 import { useAppSelector } from 'controller/redux/hooks';
@@ -68,7 +68,7 @@ function BottomTabNavigator() {
         name="QuickSetTab"
         component={QuickSetTabScreen}
         options={({ navigation }: RootTabScreenProps<'QuickSetTab'>) => ({
-          title: 'Tab One',
+          title: 'Quick Set',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
           headerRight: () => (
             <Pressable
@@ -87,8 +87,8 @@ function BottomTabNavigator() {
         })}
       />
       <BottomTab.Screen
-        name="SettingsTab"
-        component={SettingsTabScreen}
+        name="AnimateTab"
+        component={AnimateTabScreen}
         options={{
           title: 'Tab Two',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,

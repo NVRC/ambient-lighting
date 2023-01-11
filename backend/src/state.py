@@ -5,14 +5,14 @@ from fastapi.datastructures import State
 from config import GlobalConfig
 from serial_interface import commands
 
-from models import Led, RGB, Strip
+from models import Led, RGB, Strip, LedMap
 
 
 class AppState(State):
     """Subclasses State and inflates from GlobalConfig."""
 
     def __init__(self, config: GlobalConfig):
-        leds = {}
+        leds: LedMap = {}
         for i in range(0, 60):
             rgb = RGB(red=255, green=255, blue=255)
             leds[i] = Led(index=i, color=rgb)

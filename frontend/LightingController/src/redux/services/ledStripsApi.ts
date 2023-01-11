@@ -22,7 +22,7 @@ const injectedRtkApi = api.injectEndpoints({
       ReadLedStripsStripIdLedsIndexIdGetApiArg
     >({
       query: (queryArg) => ({
-        url: `/strips/${queryArg.stripId}/leds/${queryArg.indexId}`, 
+        url: `/strips/${queryArg.stripId}/leds/${queryArg.indexId}`,
       }),
     }),
     postLedStripsStripIdLedsIndexIdPost: build.mutation<
@@ -45,9 +45,7 @@ export type ReadStripStripsStripIdGetApiArg = {
   stripId: number;
 };
 export type PostStripLedsStripsStripIdLedsPostApiResponse =
-  /** status 200 Successful Response */ {
-    [key: string]: Led;
-  };
+  /** status 200 Successful Response */ any;
 export type PostStripLedsStripsStripIdLedsPostApiArg = {
   stripId: number;
   body: {
@@ -61,7 +59,7 @@ export type ReadLedStripsStripIdLedsIndexIdGetApiArg = {
   indexId: number;
 };
 export type PostLedStripsStripIdLedsIndexIdPostApiResponse =
-  /** status 200 Successful Response */ Led;
+  /** status 200 Successful Response */ any;
 export type PostLedStripsStripIdLedsIndexIdPostApiArg = {
   stripId: number;
   indexId: number;

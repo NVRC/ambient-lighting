@@ -5,13 +5,13 @@ import { Text, View } from 'controller/components/Themed';
 import { useAppSelector } from 'controller/redux/hooks';
 import { getSettings } from 'controller/redux/slices/settingsSlice';
 
-export default function SettingsTabScreen() {
+export default function AnimateTabScreen() {
   const { colorScheme } = useAppSelector(getSettings);
   return (
     <View colorScheme={colorScheme} style={styles.container}>
       <Text colorScheme={colorScheme} style={styles.title}>Tab Two</Text>
       <View  colorScheme={colorScheme} style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="/screens/SettingsTabScreen.tsx" />
+      <EditScreenInfo path="/screens/AnimateTabScreen.tsx" />
     </View>
   );
 }
