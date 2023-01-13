@@ -1,11 +1,4 @@
-from typing import List
-
-
-from models import Led, LedMap
-
-Command = List  # TODO: restrict shape with pydantic
-
-NUM_LEDS = 60
+from models import Led, LedMap, Command, CommandList
 
 # An index < 0 denotes an action event.
 #  action_key |  action
@@ -14,11 +7,12 @@ NUM_LEDS = 60
 #      -3     |  set show on write, where false <= 0 < true
 
 
-def set_strip(led_map: LedMap) -> List[Command]:
+def set_strip(led_map: LedMap) -> CommandList:
     cmds = [set_show_on_write(False)]
-    for index in led_map:  # pylint: disable=consider-using-dict-items
+    length = len(led_map)
+    for index in range(0, length):
         led = led_map[index]
-        if index == NUM_LEDS - 1:
+        if index == length - 1:
             cmds.append(set_show_on_write(True))
         cmds.append(set_led(index, led))
     return cmds

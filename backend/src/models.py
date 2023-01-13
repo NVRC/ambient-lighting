@@ -1,8 +1,14 @@
 """This module defines pydantic class models.
 """
 
-from typing import Dict
+from typing import List, Iterator, MutableMapping
 from pydantic import BaseModel
+
+NUM_LEDS = 60
+
+Command = List  # TODO: restrict shape with pydantic
+CommandList = List[Command]
+CommandGenerator = Iterator[List[Command]]
 
 
 class RGB(BaseModel):
@@ -19,7 +25,7 @@ class Led(BaseModel):
     color: RGB
 
 
-LedMap = Dict[int, Led]
+LedMap = MutableMapping[int, Led]
 
 
 class Strip(BaseModel):
@@ -27,4 +33,5 @@ class Strip(BaseModel):
 
     id: int
     brightness: int
+    number_of_leds: int
     leds: LedMap

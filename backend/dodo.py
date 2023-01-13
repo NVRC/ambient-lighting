@@ -30,7 +30,6 @@ def task_init_build_dir():
             "targets": ["build"],
         }
 
-
 def task_lint():
     """Lint python code."""
     relative_lint_path = "build/lint.json"
@@ -46,10 +45,19 @@ def task_lint():
         "clean": True
     }
 
+def task_test():
+    """Run tests."""
+    return {
+        "task_dep": ["lint"],
+        "targets": ["build/cov.xml"],
+        "actions": [
+            "pytest --cov --cov-report xml:build/cov.xml src"
+        ],
+        "clean": True
+    }
 
 def task_clean_pycache():
     """Clean pycache."""
-
     def rm_pycache():
         for path in Path.cwd().glob("__pycache__"):
             rmtree(path)

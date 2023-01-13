@@ -11,6 +11,10 @@ doit = "*"
 loguru = "*"
 black = "*"
 pylint-pydantic = "*"
+apscheduler = "*"
+pylint = "*"
+pytest = "*"
+pytest-cov = "*"
 
 [dev-packages]
 
