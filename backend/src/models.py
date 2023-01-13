@@ -18,6 +18,15 @@ class RGB(BaseModel):
     green: int
     blue: int
 
+    def __eq__(self, other: "RGB"):
+        if not isinstance(self, other.__class__):
+            return NotImplementedError
+        return (
+            (self.red == other.red)
+            & (self.green == other.green)
+            & (self.blue == other.blue)
+        )
+
 
 class Led(BaseModel):
     """Led modeling an index within a Strip and a color."""

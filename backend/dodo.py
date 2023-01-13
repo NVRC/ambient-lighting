@@ -49,9 +49,9 @@ def task_test():
     """Run tests."""
     return {
         "task_dep": ["lint"],
-        "targets": ["build/cov.xml"],
+        "targets": ["build/cov.xml", ".coverage"],
         "actions": [
-            "pytest --cov --cov-report xml:build/cov.xml src"
+            "pytest --cov-report xml:build/cov.xml src"
         ],
         "clean": True
     }

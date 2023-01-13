@@ -1,6 +1,11 @@
 from datetime import timedelta
 from models import Led, LedMap, RGB, Strip
-from serial_interface.animation import shift_generator, ShiftAnimation, AnimationType
+from serial_interface.animation import (
+    shift_generator,
+    ShiftAnimation,
+    AnimationType,
+    linear_gradient,
+)
 from serial_interface import commands
 
 t_led_m: LedMap = {
@@ -27,3 +32,13 @@ def test_shift_generator():
     assert initial_iter_cmds == t_cmds
     next_iter_cmds = next(generator)
     assert next_iter_cmds == exp_cmds
+
+
+def test_linear_gradient():
+    start = RGB(red=255, green=255, blue=255)
+    end = RGB(red=255, green=255, blue=0)
+
+    exp_c = RGB(red=255, green=255, blue=127)
+    exp_linear_gradient = [start, exp_c, end]
+    res_l_gradient = linear_gradient(start, end, 3)
+    assert res_l_gradient == exp_linear_gradient

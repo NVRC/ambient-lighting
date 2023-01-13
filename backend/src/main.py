@@ -1,8 +1,10 @@
+from typing import List
+
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from models import Led, Strip, LedMap
-from serial_interface import commands
+from serial_interface import commands, animation
 from config import DEV_LABEL, ConfigFactory
 
 from state import AppState
@@ -52,6 +54,26 @@ if __name__ == "__main__":
         cmds.extend(commands.set_strip(strip.leds))
         request.app.state.command(cmds)
         return strip
+
+    @app.post("/strips/{strip_id}/animate", status_code=200)
+    def post_strip_animation(
+        request: Request, strip_id: int, animation_setting: animation.AnimationSettings
+    ):
+        curr_strip = request.app.state.strips.get(strip_id, None)
+        if curr_strip is None:
+            raise HTTPException(status_code=404, detail="Lighting strip not found")
+
+        request.app.state.animate(curr_strip, animation_setting)
+
+    @app.get("/strips/{strip_id}/animate", status_code=200)
+    def get_strip_animations(
+        request: Request, strip_id: int
+    ) -> List[animation.AnimationDetails]:
+        curr_strip = request.app.state.strips.get(strip_id, None)
+        if curr_strip is None:
+            raise HTTPException(status_code=404, detail="Lighting strip not found")
+
+        return list(animation.AnimationFunctionRegistry.keys())
 
     @app.post("/strips/{strip_id}/leds", status_code=201)
     def post_strip_leds(request: Request, strip_id: int, led_map: LedMap):

@@ -4,7 +4,7 @@ from typing import List
 
 from fastapi.datastructures import State
 from config import GlobalConfig
-from serial_interface import commands, controller
+from serial_interface import commands, controller, animation
 
 from models import Led, RGB, Strip, LedMap, NUM_LEDS
 
@@ -36,3 +36,7 @@ class AppState(State):
     def command(self, cmds: List[commands.Command]):
         if self.serial_link_available:
             self.link.process(cmds)
+
+    def animate(self, strip: Strip, settings: animation.AnimationSettings):
+        if self.serial_link_available:
+            self.link.animate(strip, settings)

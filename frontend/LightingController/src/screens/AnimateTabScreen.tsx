@@ -1,17 +1,52 @@
-import { StyleSheet } from 'react-native';
+import { View, Text, FlatList, SafeAreaView, StyleSheet, ActivityIndicator } from 'react-native';
 
 import EditScreenInfo from 'controller/components/EditScreenInfo';
-import { Text, View } from 'controller/components/Themed';
 import { useAppSelector } from 'controller/redux/hooks';
 import { getSettings } from 'controller/redux/slices/settingsSlice';
 
+import { AnimationDetails, AnimationSettings } from 'controller/redux/services/ledStripsApi';
+import { STRIP_ID } from 'controller/redux/store';
+
+import { useGetStripAnimationsStripsStripIdAnimateGetQuery } from 'controller/redux/services/ledStripsApi';
+
+
+type AnimationDetailsList = Array<AnimationDetails>
+
+const animations: Array<AnimationDetails> = [
+]
+
+const AnimationTile = ({animation}: {animation: AnimationDetails}) => {
+    return (
+        <View>
+            <Text>{animation.animation_type}</Text>
+        </View>
+    );
+}
+
 export default function AnimateTabScreen() {
   const { colorScheme } = useAppSelector(getSettings);
+
+  const { data: animations, isLoading, isFetching, isError } = useGetStripAnimationsStripsStripIdAnimateGetQuery({
+    stripId: STRIP_ID,
+  })
+
+  if (isLoading || isFetching || isError || animations === undefined){
+    return (
+        <View style={styles.container}>
+            <ActivityIndicator />
+        </View>
+    )
+  }
+
   return (
-    <View colorScheme={colorScheme} style={styles.container}>
-      <Text colorScheme={colorScheme} style={styles.title}>Tab Two</Text>
-      <View  colorScheme={colorScheme} style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="/screens/AnimateTabScreen.tsx" />
+    <View style={styles.container}>
+        <SafeAreaView>
+            <FlatList
+                data={animations}
+                renderItem={({item}) => <AnimationTile animation={item} />}
+                />
+
+        </SafeAreaView>
     </View>
   );
 }

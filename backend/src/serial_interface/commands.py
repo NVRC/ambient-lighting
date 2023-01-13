@@ -1,4 +1,4 @@
-from models import Led, LedMap, Command, CommandList
+from models import Led, LedMap, Command, CommandList, RGB
 
 # An index < 0 denotes an action event.
 #  action_key |  action
@@ -40,3 +40,11 @@ def set_show_on_write(show_on_write: bool) -> Command:
     if show_on_write:
         show_on_write_int = 1
     return [-3, show_on_write_int, 0, 0]
+
+
+def set_color(color: RGB, num_leds: int) -> CommandList:
+    """Returns a command list setting an entire strip to a single color."""
+    led_map: LedMap = {}
+    for i in range(0, num_leds):
+        led_map[i] = Led(color=color)
+    return set_strip(led_map)

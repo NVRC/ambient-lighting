@@ -17,6 +17,22 @@ const injectedRtkApi = api.injectEndpoints({
         body: queryArg.strip,
       }),
     }),
+    getStripAnimationsStripsStripIdAnimateGet: build.query<
+      GetStripAnimationsStripsStripIdAnimateGetApiResponse,
+      GetStripAnimationsStripsStripIdAnimateGetApiArg
+    >({
+      query: (queryArg) => ({ url: `/strips/${queryArg.stripId}/animate` }),
+    }),
+    postStripAnimationStripsStripIdAnimatePost: build.mutation<
+      PostStripAnimationStripsStripIdAnimatePostApiResponse,
+      PostStripAnimationStripsStripIdAnimatePostApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/strips/${queryArg.stripId}/animate`,
+        method: "POST",
+        body: queryArg.animationSettings,
+      }),
+    }),
     postStripLedsStripsStripIdLedsPost: build.mutation<
       PostStripLedsStripsStripIdLedsPostApiResponse,
       PostStripLedsStripsStripIdLedsPostApiArg
@@ -60,6 +76,17 @@ export type PostStripStripsStripIdPostApiArg = {
   stripId: number;
   strip: Strip;
 };
+export type GetStripAnimationsStripsStripIdAnimateGetApiResponse =
+  /** status 200 Successful Response */ AnimationDetails[];
+export type GetStripAnimationsStripsStripIdAnimateGetApiArg = {
+  stripId: number;
+};
+export type PostStripAnimationStripsStripIdAnimatePostApiResponse =
+  /** status 200 Successful Response */ any;
+export type PostStripAnimationStripsStripIdAnimatePostApiArg = {
+  stripId: number;
+  animationSettings: AnimationSettings;
+};
 export type PostStripLedsStripsStripIdLedsPostApiResponse =
   /** status 201 Successful Response */ any;
 export type PostStripLedsStripsStripIdLedsPostApiArg = {
@@ -92,6 +119,7 @@ export type Led = {
 export type Strip = {
   id: number;
   brightness: number;
+  number_of_leds: number;
   leds: {
     [key: string]: Led;
   };
@@ -104,9 +132,19 @@ export type ValidationError = {
 export type HttpValidationError = {
   detail?: ValidationError[];
 };
+export type AnimationType = "SHIFT" | "GRADIENT_POLYLINEAR_INTERPOLATION";
+export type AnimationSettings = {
+  rate: number;
+};
+export type AnimationDetails = {
+  animation_type: AnimationType;
+  settings: AnimationSettings;
+};
 export const {
   useReadStripStripsStripIdGetQuery,
   usePostStripStripsStripIdPostMutation,
+  useGetStripAnimationsStripsStripIdAnimateGetQuery,
+  usePostStripAnimationStripsStripIdAnimatePostMutation,
   usePostStripLedsStripsStripIdLedsPostMutation,
   useReadLedStripsStripIdLedsIndexIdGetQuery,
   usePostLedStripsStripIdLedsIndexIdPostMutation,
