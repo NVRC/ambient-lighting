@@ -5,7 +5,8 @@ import { RootTabScreenProps } from '../../types';
 import { useAppSelector } from 'controller/redux/hooks';
 import { getSettings } from 'controller/redux/slices/settingsSlice';
 import { RgbColor, RgbColorPicker } from 'react-colorful';
-import { Led, usePostStripLedsStripsStripIdLedsPostMutation, useReadStripStripsStripIdGetQuery } from 'controller/redux/services/ledStripsApi';
+import { Led } from 'controller/redux/services/auto_gen/ledStripsApi'
+import { usePostStripLedsStripsStripIdLedsPostMutation, useReadStripStripsStripIdGetQuery } from 'controller/redux/services/ledStripsApi';
 
 import { STRIP_ID } from 'controller/redux/store'
 interface LedMap {

@@ -2,7 +2,6 @@ import { View, TouchableOpacity, FlatList, SafeAreaView, StyleSheet, ActivityInd
 
 import { Text as TText, View as TView } from 'controller/components/Themed';
 
-import EditScreenInfo from 'controller/components/EditScreenInfo';
 import { useAppSelector } from 'controller/redux/hooks';
 import { getSettings } from 'controller/redux/slices/settingsSlice';
 
