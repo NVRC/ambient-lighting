@@ -10,10 +10,7 @@ from models import Led, RGB, Strip, LedMap, NUM_LEDS
 
 
 class AppState(State):
-    """Subclasses State and inflates from GlobalConfig.
-
-    Controls
-    """
+    """Subclasses State and inflates from GlobalConfig."""
 
     def __init__(self, config: GlobalConfig):
         leds: LedMap = {}
@@ -35,7 +32,7 @@ class AppState(State):
 
     def command(self, cmds: List[commands.Command]):
         if self.serial_link_available:
-            self.link.process(cmds)
+            self.link.process(*cmds)
 
     def animate(self, strip: Strip, settings: animation.AnimationSettings):
         if self.serial_link_available:

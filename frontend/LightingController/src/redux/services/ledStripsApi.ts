@@ -1,151 +1,61 @@
-import { emptySplitApi as api } from "./emptyApi";
-const injectedRtkApi = api.injectEndpoints({
-  endpoints: (build) => ({
-    readStripStripsStripIdGet: build.query<
-      ReadStripStripsStripIdGetApiResponse,
-      ReadStripStripsStripIdGetApiArg
-    >({
-      query: (queryArg) => ({ url: `/strips/${queryArg.stripId}` }),
-    }),
-    postStripStripsStripIdPost: build.mutation<
-      PostStripStripsStripIdPostApiResponse,
-      PostStripStripsStripIdPostApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/strips/${queryArg.stripId}`,
-        method: "POST",
-        body: queryArg.strip,
-      }),
-    }),
-    getStripAnimationsStripsStripIdAnimateGet: build.query<
-      GetStripAnimationsStripsStripIdAnimateGetApiResponse,
-      GetStripAnimationsStripsStripIdAnimateGetApiArg
-    >({
-      query: (queryArg) => ({ url: `/strips/${queryArg.stripId}/animate` }),
-    }),
-    postStripAnimationStripsStripIdAnimatePost: build.mutation<
-      PostStripAnimationStripsStripIdAnimatePostApiResponse,
-      PostStripAnimationStripsStripIdAnimatePostApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/strips/${queryArg.stripId}/animate`,
-        method: "POST",
-        body: queryArg.animationSettings,
-      }),
-    }),
-    postStripLedsStripsStripIdLedsPost: build.mutation<
-      PostStripLedsStripsStripIdLedsPostApiResponse,
-      PostStripLedsStripsStripIdLedsPostApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/strips/${queryArg.stripId}/leds`,
-        method: "POST",
-        body: queryArg.body,
-      }),
-    }),
-    readLedStripsStripIdLedsIndexIdGet: build.query<
-      ReadLedStripsStripIdLedsIndexIdGetApiResponse,
-      ReadLedStripsStripIdLedsIndexIdGetApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/strips/${queryArg.stripId}/leds/${queryArg.indexId}`,
-      }),
-    }),
-    postLedStripsStripIdLedsIndexIdPost: build.mutation<
-      PostLedStripsStripIdLedsIndexIdPostApiResponse,
-      PostLedStripsStripIdLedsIndexIdPostApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/strips/${queryArg.stripId}/leds/${queryArg.indexId}`,
-        method: "POST",
-        body: queryArg.led,
-      }),
-    }),
-  }),
-  overrideExisting: false,
-});
-export { injectedRtkApi as ledStripsApi };
-export type ReadStripStripsStripIdGetApiResponse =
-  /** status 200 Successful Response */ Strip;
-export type ReadStripStripsStripIdGetApiArg = {
-  stripId: number;
-};
-export type PostStripStripsStripIdPostApiResponse =
-  /** status 201 Successful Response */ Strip;
-export type PostStripStripsStripIdPostApiArg = {
-  stripId: number;
-  strip: Strip;
-};
-export type GetStripAnimationsStripsStripIdAnimateGetApiResponse =
-  /** status 200 Successful Response */ AnimationDetails[];
-export type GetStripAnimationsStripsStripIdAnimateGetApiArg = {
-  stripId: number;
-};
-export type PostStripAnimationStripsStripIdAnimatePostApiResponse =
-  /** status 200 Successful Response */ any;
-export type PostStripAnimationStripsStripIdAnimatePostApiArg = {
-  stripId: number;
-  animationSettings: AnimationSettings;
-};
-export type PostStripLedsStripsStripIdLedsPostApiResponse =
-  /** status 201 Successful Response */ any;
-export type PostStripLedsStripsStripIdLedsPostApiArg = {
-  stripId: number;
-  body: {
-    [key: string]: Led;
-  };
-};
-export type ReadLedStripsStripIdLedsIndexIdGetApiResponse =
-  /** status 200 Successful Response */ Led;
-export type ReadLedStripsStripIdLedsIndexIdGetApiArg = {
-  stripId: number;
-  indexId: number;
-};
-export type PostLedStripsStripIdLedsIndexIdPostApiResponse =
-  /** status 201 Successful Response */ any;
-export type PostLedStripsStripIdLedsIndexIdPostApiArg = {
-  stripId: number;
-  indexId: number;
-  led: Led;
-};
-export type Rgb = {
-  red: number;
-  green: number;
-  blue: number;
-};
-export type Led = {
-  color: Rgb;
-};
-export type Strip = {
-  id: number;
-  brightness: number;
-  number_of_leds: number;
-  leds: {
-    [key: string]: Led;
-  };
-};
-export type ValidationError = {
-  loc: (string | number)[];
-  msg: string;
-  type: string;
-};
-export type HttpValidationError = {
-  detail?: ValidationError[];
-};
-export type AnimationType = "SHIFT" | "GRADIENT_POLYLINEAR_INTERPOLATION";
-export type AnimationSettings = {
-  rate: number;
-};
-export type AnimationDetails = {
-  animation_type: AnimationType;
-  settings: AnimationSettings;
-};
+import { ledStripsApi as _ledStripsApi } from "./auto_gen/ledStripsApi"
+
+const TAG_UNKNOWN_ERROR = "UNKNOWN_ERROR";
+
+// Configure endpoints to invalidate the cache per collection or id.
+export const ledStripsApi = _ledStripsApi
+    .enhanceEndpoints({
+        addTagTypes: [TAG_UNKNOWN_ERROR],
+    })
+    .enhanceEndpoints({
+        endpoints: {
+            readStripStripsStripIdGet: {
+                providesTags: (strip) => {
+                    if (strip === undefined) {
+                        return [ TAG_UNKNOWN_ERROR ]
+                    }
+                    let id = strip.id;
+                    return [{ type: "strips" as const, id}, "strips"]
+                }
+            },
+            postStripStripsStripIdPost: {
+                invalidatesTags: (strip) => {
+                    if (strip === undefined) {
+                        return [ TAG_UNKNOWN_ERROR ]
+                    }
+                    let id = strip.id;
+                    return [{ type: "strips" as const, id}, "strips"]
+                }
+            },
+            postStripLedsStripsStripIdLedsPost: {
+                invalidatesTags: (led_map, error, query_args) => {
+                    if (led_map === undefined || error === undefined) {
+                        return [ TAG_UNKNOWN_ERROR ]
+                    }
+                    const strip_id = query_args.stripId
+                    return [{ type: "strips" as const, strip_id}, "leds"]
+
+                }
+            },
+            postLedStripsStripIdLedsIndexIdPost: {
+                invalidatesTags: (led, error, query_args) => {
+                    if (led === undefined || error === undefined) {
+                        return [ TAG_UNKNOWN_ERROR ]
+                    }
+                    const strip_id = query_args.stripId
+                    return [{ type: "strips" as const, strip_id}, "leds"]
+                }
+            },
+        }
+    })
+
 export const {
-  useReadStripStripsStripIdGetQuery,
-  usePostStripStripsStripIdPostMutation,
-  useGetStripAnimationsStripsStripIdAnimateGetQuery,
-  usePostStripAnimationStripsStripIdAnimatePostMutation,
-  usePostStripLedsStripsStripIdLedsPostMutation,
-  useReadLedStripsStripIdLedsIndexIdGetQuery,
-  usePostLedStripsStripIdLedsIndexIdPostMutation,
-} = injectedRtkApi;
+    useReadStripStripsStripIdGetQuery,
+    usePostStripStripsStripIdPostMutation,
+    useGetStripAnimationsStripsStripIdAnimateGetQuery,
+    usePostStripAnimationStripsStripIdAnimatePostMutation,
+    usePostStripLedsStripsStripIdLedsPostMutation,
+    useReadLedStripsStripIdLedsIndexIdGetQuery,
+    usePostLedStripsStripIdLedsIndexIdPostMutation,
+    } = ledStripsApi;
+      

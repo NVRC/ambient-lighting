@@ -8,7 +8,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "test": "jest --watchAll",
-    "updateApiSpecs": "npx @rtk-query/codegen-openapi src/redux/services/openapi-config.json"
+    "updateApiSpecs": "npx @rtk-query/codegen-openapi src/redux/services/auto_gen/openapi-config.json"
   },
   "jest": {
     "preset": "jest-expo"

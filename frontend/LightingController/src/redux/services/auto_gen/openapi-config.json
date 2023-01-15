@@ -4,5 +4,6 @@
     "apiImport": "emptySplitApi",
     "outputFile": "./ledStripsApi.ts",
     "exportName": "ledStripsApi",
+    "tag": true,
     "hooks": true
 }

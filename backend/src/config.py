@@ -1,5 +1,5 @@
 from typing import Optional
-from pydantic import BaseModel, BaseSettings
+from pydantic import BaseModel, BaseSettings, Field
 
 DEV_LABEL = "DEV"
 PROD_LABEL = "PROD"
@@ -11,11 +11,8 @@ class AppConfig(BaseModel):
 
 class GlobalConfig(BaseSettings):
     app_config: AppConfig = AppConfig()
-    serial_device_path: Optional[str] = None
+    serial_device_path: Optional[str] = Field(default=None, env="serial_device_path")
     debug: bool = False
-
-    class Config:
-        env_file: str = ".env"
 
 
 class DevConfig(GlobalConfig):
@@ -33,7 +30,7 @@ class ConfigFactory:
 
     def __call__(self, env_label: Optional[str]):
         if env_label == DEV_LABEL:
-            return DevConfig()
+            return DevConfig(_env_file=".env", serial_device_path="/dev/ttyUSB0")
         if env_label == PROD_LABEL:
-            return ProdConfig()
+            return ProdConfig(_env_file=".env")
         raise Exception("Invalid environment label '{}' provided".format(env_label))

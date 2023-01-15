@@ -40,7 +40,7 @@ class AnimationDetails(BaseModel):
     """
 
     animation_type: AnimationType
-    settings: AnimationSettings
+    settings: dict  # Use dict instead of AnimationSettings for JS compat
 
     def __hash__(self) -> int:
         return hash(self.animation_type)
@@ -74,12 +74,16 @@ def linear_gradient(start: RGB, end: RGB, steps: int) -> List[RGB]:
     output_colors = [start]
     for step in range(1, steps):
         rgb = RGB(
-            red=int(start.red + (float(step) / (steps - 1)) * (end.red - start.red)),
+            red=int(
+                start["red"] + (float(step) / (steps - 1)) * (end["red"] - start["red"])
+            ),
             blue=int(
-                start.blue + (float(step) / (steps - 1)) * (end.blue - start.blue)
+                start["blue"]
+                + (float(step) / (steps - 1)) * (end["blue"] - start["blue"])
             ),
             green=int(
-                start.green + (float(step) / (steps - 1)) * (end.red - start.green)
+                start["green"]
+                + (float(step) / (steps - 1)) * (end["red"] - start["green"])
             ),
         )
         output_colors.append(rgb)
@@ -96,7 +100,7 @@ def polylinear_gradient(colors: List[RGB], steps: int) -> List[RGB]:
         start = colors[z_index]
         end = colors[z_index + 1]
         sub_l = linear_gradient(start, end, sub_length)
-        t_colors.append(sub_l)
+        t_colors.extend(sub_l)
     return t_colors
 
 
@@ -117,16 +121,16 @@ def shift_generator(strip: Strip, settings: ShiftAnimation) -> CommandGenerator:
     while True:
         cmds = commands.set_strip(leds)
         yield cmds
-        leds.rotate(settings.shift_by)
+        leds.rotate(settings.get("shift_by"))
 
 
 @register_animation(
     animation_details=AnimationDetails(
         animation_type=AnimationType.GRADIENT_POLYLINEAR_INTERPOLATION,
         settings=RandGradient2DLinearInterpolation(
-            rate=timedelta(seconds=5),
-            colors=[RGB(red=255, green=255, blue=255), RGB(red=255, green=255, blue=0)],
-            y_len=60,
+            rate=timedelta(seconds=1),
+            colors=[RGB(red=0, green=255, blue=0), RGB(red=0, green=0, blue=255)],
+            y_len=25,
         ),
     )
 )
@@ -135,7 +139,7 @@ def rand_gradient_polylinear_interpolation_generator(
 ) -> CommandGenerator:
     """Generates a polylinear interpolated sequence."""
 
-    gradient = polylinear_gradient(settings.colors, settings.y_len)
+    gradient = polylinear_gradient(settings.get("colors"), settings.get("y_len"))
 
     moving_index = 0
     direction_left = True
@@ -145,7 +149,7 @@ def rand_gradient_polylinear_interpolation_generator(
         color = gradient[moving_index]
         cmds = commands.set_color(color, strip.number_of_leds - 1)
         yield cmds
-        if moving_index >= strip.number_of_leds - 1:
+        if moving_index >= settings.get("y_len") - 1:
             direction_left = False
         if moving_index <= 0:
             direction_left = True

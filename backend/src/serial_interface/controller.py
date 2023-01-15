@@ -9,7 +9,12 @@ from loguru import logger
 from models import Strip
 
 
-from serial_interface.animation import AnimationSettings, AnimationType, shift_generator
+from serial_interface.animation import (
+    AnimationDetails,
+    AnimationType,
+    shift_generator,
+    rand_gradient_polylinear_interpolation_generator,
+)
 
 EXECUTOR_ANIMATION_NAME = "animation"
 
@@ -32,6 +37,7 @@ class Controller:
             executors={EXECUTOR_ANIMATION_NAME: ThreadPoolExecutor()},
             job_defaults={"max_instances": 1, "coalesce": False},
         )
+        self.apscheduler.start()
 
         self.link.open()
 
@@ -40,21 +46,35 @@ class Controller:
             for cmd in cmds:
                 _process(self.link, cmd)
 
-    def animate(self, strip: Strip, animation_settings: AnimationSettings) -> bool:
-        if animation_settings.animation_type == AnimationType.SHIFT:
-            generator = shift_generator(strip, settings=animation_settings)
+    def animate(self, strip: Strip, animation: AnimationDetails) -> bool:
+        if animation.animation_type == AnimationType.SHIFT:
+            generator = shift_generator(strip, settings=animation.settings)
+        elif (
+            animation.animation_type == AnimationType.GRADIENT_POLYLINEAR_INTERPOLATION
+        ):
+            generator = rand_gradient_polylinear_interpolation_generator(
+                strip, settings=animation.settings
+            )
         else:
             return False
 
         def _job():
+            logger.info("running job")
             cmds = next(generator)
             with self._link_lock:
                 for cmd in cmds:
                     _process(self.link, cmd)
 
         _job()
+        rate = animation.settings.get("rate", None)
+        if rate is None:
+            return False
         self.apscheduler.add_job(
-            _job, "interval", int(animation_settings.rate.total_seconds())
+            _job,
+            executor=EXECUTOR_ANIMATION_NAME,
+            replace_existing=True,
+            trigger="interval",
+            seconds=rate,
         )
         return True
 
