@@ -8,7 +8,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
-import { ColorSchemeName, Pressable } from 'react-native';
+import { Pressable } from 'react-native';
 
 import Colors from '../constants/Colors';
 import ModalScreen from '../screens/SettingsScreen';
@@ -19,6 +19,8 @@ import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../../
 import LinkingConfiguration from './LinkingConfiguration';
 import { useAppSelector } from 'controller/redux/hooks';
 import { getSettings } from 'controller/redux/slices/settingsSlice';
+
+import RGBSpaceScreen from 'controller/screens/RGBSpaceScreen';
 
 export default function Navigation() {
   const { colorScheme } = useAppSelector(getSettings)
@@ -70,21 +72,29 @@ function BottomTabNavigator() {
         options={({ navigation }: RootTabScreenProps<'QuickSetTab'>) => ({
           title: 'Quick Set',
           tabBarIcon: ({ color }) => <TabBarIcon name="dot-circle-o" color={color} />,
-          headerRight: () => (
-            <Pressable
-              onPress={() => navigation.navigate('Modal')}
-              style={({ pressed }) => ({
+          headerRight: () => {
+          return ( <Pressable
+            onPress={() => navigation.navigate('Modal')}
+            style={({ pressed }) => ({
                 opacity: pressed ? 0.5 : 1,
-              })}>
-              <FontAwesome
+            })}>
+            <FontAwesome
                 name="gears"
                 size={25}
                 color={Colors[colorScheme].text}
                 style={{ marginRight: 15 }}
-              />
-            </Pressable>
-          ),
+            />
+            </Pressable>)
+          }
         })}
+      />
+    <BottomTab.Screen
+        name="RGBSpaceTab"
+        component={RGBSpaceScreen}
+        options={{
+          title: 'RGB Space',
+          tabBarIcon: ({ color }) => <TabBarIcon name="cube" color={color} />,
+        }}
       />
       <BottomTab.Screen
         name="AnimateTab"

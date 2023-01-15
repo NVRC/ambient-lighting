@@ -25,6 +25,11 @@ const linking: LinkingOptions<RootStackParamList> = {
               AnimateTabScreen: 'two',
             },
           },
+          RGBSpaceTab: {
+            screens: {
+                RGBSpaceTabScreen: 'three',
+            }
+          }
         },
       },
       Modal: 'modal',
